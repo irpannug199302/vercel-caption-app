@@ -16,7 +16,6 @@ class handler(BaseHTTPRequestHandler):
             image_base64 = data.get('image').split(',')[1]
             tone = data.get('tone', 'santai')
             
-            # Ambil API Key dari Environment Variables Vercel
             api_key = os.environ.get("GEMINI_API_KEY")
             if not api_key:
                 self.send_response(500)
@@ -27,17 +26,16 @@ class handler(BaseHTTPRequestHandler):
 
             client = genai.Client(api_key=api_key)
 
-            # Decode dan Resize gambar agar cepat diproses (mencegah timeout 10 detik)
             image_bytes = base64.b64decode(image_base64)
             img = Image.open(io.BytesIO(image_bytes))
-            img.thumbnail((1024, 1024)) # Batasi resolusi maksimal agar ringan
+            img.thumbnail((1024, 1024))
 
             prompt = f"""
             Analisis gambar yang diunggah dan buatkan 3 opsi caption media sosial dalam Bahasa Indonesia dengan gaya bahasa '{tone}', lengkap dengan hashtag yang relevan.
             """
 
             response = client.models.generate_content(
-                model='gemini-3.8-flash',
+                model='gemini-1.5-flash',
                 contents=[img, prompt]
             )
 
