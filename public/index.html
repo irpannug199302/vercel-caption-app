@@ -3,370 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShortLink Pro — Pemendek URL Cepat & Aman</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>AI Caption Generator Foto</title>
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --accent: #ec4899;
-            --bg-dark: #090d16;
-            --card-bg: rgba(22, 27, 46, 0.7);
-            --card-border: rgba(255, 255, 255, 0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 24px 16px;
-            gap: 20px;
-            color: #f8fafc;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        .ambient-glow {
-            position: absolute;
-            width: 350px;
-            height: 350px;
-            border-radius: 50%;
-            filter: blur(120px);
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0.5;
-            animation: pulse 8s ease-in-out infinite alternate;
-        }
-        .glow-1 { top: 5%; left: 10%; background: #6366f1; }
-        .glow-2 { bottom: 5%; right: 10%; background: #ec4899; }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.4; }
-            100% { transform: scale(1.2); opacity: 0.6; }
-        }
-
-        /* Container Pembungkus Iklan */
-        .ad-container-top,
-        .ad-container-bottom {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            max-width: 480px;
-            text-align: center;
-            overflow: hidden;
-        }
-
-        .card {
-            position: relative;
-            z-index: 1;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            width: 100%;
-            max-width: 480px;
-            padding: 40px 32px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 
-                        inset 0 1px 1px 0 rgba(255, 255, 255, 0.1);
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(99, 102, 241, 0.15);
-            color: #818cf8;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 6px 14px;
-            border-radius: 20px;
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            margin-bottom: 16px;
-        }
-
-        h1 {
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            color: #94a3b8;
-            font-size: 14px;
-        }
-
-        .input-group {
-            position: relative;
-            margin-bottom: 18px;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #64748b;
-        }
-
-        input[type="url"], input[type="text"] {
-            width: 100%;
-            padding: 16px 16px 16px 48px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1.5px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
-            color: #fff;
-            font-size: 15px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        input[type="url"]:focus {
-            border-color: var(--primary);
-            background: rgba(15, 23, 42, 0.9);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            color: white;
-            border: none;
-            border-radius: 14px;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 25px -5px rgba(99, 102, 241, 0.5);
-            background: linear-gradient(135deg, #4f46e5, #9333ea);
-        }
-
-        .btn-submit:active { transform: translateY(0); }
-        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
-
-        .result {
-            display: none;
-            margin-top: 24px;
-            padding-top: 24px;
-            border-top: 1px dashed rgba(255, 255, 255, 0.15);
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .result p {
-            font-size: 13px;
-            color: #94a3b8;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-
-        .box-copy {
-            display: flex;
-            gap: 8px;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
-            padding: 6px;
-        }
-
-        .box-copy input {
-            background: transparent;
-            border: none;
-            padding: 10px 14px;
-            color: #38bdf8;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .btn-copy {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 0 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-copy:hover {
-            background: #10b981;
-            color: white;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 24px;
-            font-size: 12px;
-            color: #64748b;
-        }
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; background: #f4f7f6; }
+        .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        input, select { width: 100%; margin-top: 5px; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #0070f3; color: white; border: none; padding: 12px 20px; width: 100%; margin-top: 20px; cursor: pointer; border-radius: 4px; font-size: 16px; font-weight: bold; }
+        button:hover { background: #0051a2; }
+        #result { background: #f8f9fa; padding: 15px; margin-top: 20px; white-space: pre-wrap; border: 1px solid #e9ecef; border-radius: 4px; min-height: 100px; }
     </style>
 </head>
 <body>
-    <div class="ambient-glow glow-1"></div>
-    <div class="ambient-glow glow-2"></div>
 
-    <!-- IKLAN BANNER ATAS (320x50) -->
-    <div class="ad-container-top">
-        <script type="text/javascript">
-          atOptions = {
-            'key' : '35aec0b1f48870118c91c2483e050bdc',
-            'format' : 'iframe',
-            'height' : 50,
-            'width' : 320,
-            'params' : {}
-          };
-        </script>
-        <script type="text/javascript" src="https://brijmohan.org/22/35aec0b1f48870118c91c2483e050bdc"></script>
-    </div>
-
-    <!-- KARTU APLIKASI UTAMA -->
     <div class="card">
-        <div class="header">
-            <span class="badge">
-                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99zM11 16h2v2h-2zm0-6h2v4h-2z"/></svg>
-                Cloudflare Edge Speed
-            </span>
-            <h1>ShortLink Pro</h1>
-            <p class="subtitle">Buat link panjang menjadi ringkas dan mudah dibagikan</p>
-        </div>
+        <h2>AI Caption Generator Foto</h2>
+        <p>Unggah foto Anda dan biarkan Gemini membuatkan caption otomatis!</p>
 
-        <form onsubmit="handleShorten(event)">
-            <div class="input-group">
-                <svg class="input-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                </svg>
-                <input type="url" id="longUrl" placeholder="Tempel URL di sini (https://...)" required autocomplete="off">
-            </div>
+        <label for="imageInput">Pilih Foto:</label>
+        <input type="file" id="imageInput" accept="image/*">
 
-            <button type="submit" id="btnSubmit" class="btn-submit">
-                <span>Perpendek Link</span>
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-            </button>
-        </form>
+        <label for="tone">Gaya Bahasa (Tone):</label>
+        <select id="tone">
+            <option value="santai">Santai / Casual</option>
+            <option value="aesthetic">Aesthetic</option>
+            <option value="lucu">Lucu / Humor</option>
+            <option value="profesional">Profesional</option>
+        </select>
 
-        <div class="result" id="resBox">
-            <p>🎉 Link pendek siap dibagikan:</p>
-            <div class="box-copy">
-                <input type="text" id="shortRes" readonly>
-                <button type="button" class="btn-copy" id="btnCopy" onclick="copyLink()">
-                    <span id="copyText">Salin</span>
-                </button>
-            </div>
-        </div>
+        <button onclick="kirimKeServer()">Buat Caption</button>
 
-        <div class="footer">
-            Ditenagai oleh Cloudflare Workers & KV
-        </div>
+        <h3>Hasil Caption:</h3>
+        <div id="result">Hasilnya akan muncul di sini...</div>
     </div>
 
-    <!-- IKLAN BAWAH -->
-    <div class="ad-container-bottom">
-        <script async="async" data-cfasync="false" src="https://brijmohan.org/21/7f5a0cd93392bf2675437348fbd0d812"></script>
-        <div id="container-7f5a0cd93392bf2675437348fbd0d812"></div>
-    </div>
-
-    <!-- SCRIPT APLIKASI UTAMA -->
     <script>
-        async function handleShorten(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmit');
-            const urlVal = document.getElementById('longUrl').value;
-            const originalText = btn.innerHTML;
-            
-            btn.innerHTML = '<span>Memproses...</span>';
-            btn.disabled = true;
+        async function kirimKeServer() {
+            const fileInput = document.getElementById('imageInput').files[0];
+            const tone = document.getElementById('tone').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!fileInput) {
+                alert("Mohon pilih foto terlebih dahulu!");
+                return;
+            }
+
+            resultDiv.innerText = "⏳ Sedang memproses foto di server Vercel...";
 
             try {
-                const res = await fetch('/api/shorten', {
+                const base64Data = await toBase64(fileInput);
+
+                const response = await fetch('/api/generate', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ url: urlVal })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: base64Data, tone: tone, mimeType: fileInput.type })
                 });
-                const data = await res.json();
-                if(res.ok) {
-                    document.getElementById('shortRes').value = data.shortUrl;
-                    document.getElementById('resBox').style.display = 'block';
+
+                const data = await response.json();
+                if (data.success) {
+                    resultDiv.innerText = data.caption;
                 } else {
-                    alert(data.error);
+                    resultDiv.innerText = "❌ Error: " + data.error;
                 }
-            } catch(e) {
-                alert('Gagal menghubungi server.');
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+            } catch (error) {
+                resultDiv.innerText = "❌ Terjadi kesalahan jaringan: " + error.message;
             }
         }
 
-        function copyLink() {
-            const input = document.getElementById('shortRes');
-            input.select();
-            navigator.clipboard.writeText(input.value);
-            
-            const copyText = document.getElementById('copyText');
-            copyText.innerText = 'Tersalin! ✓';
-            setTimeout(() => {
-                copyText.innerText = 'Salin';
-            }, 2000);
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
         }
     </script>
-
-    <!-- HISTATS TRACKER -->
-    <script type="text/javascript">
-        var _Hasync = _Hasync || [];
-        _Hasync.push(['Histats.start', '1,4930210,4,0,0,0,00010000']);
-        _Hasync.push(['Histats.fasi', '1']);
-        _Hasync.push(['Histats.track_hits', '']);
-        (function() {
-            var hs = document.createElement('script');
-            hs.type = 'text/javascript';
-            hs.async = true;
-            hs.src = ('//s10.histats.com/js15_as.js');
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
-        })();
-    </script>
-    <noscript><a href="/" target="_blank"><img src="//sstatic1.histats.com/0.gif?4930210&101" alt="site stats" border="0"></a></noscript>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"a5dfb46b12c041268a19d6be93fbf406","r":1,"spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>
