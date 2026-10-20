@@ -27,9 +27,10 @@ class handler(BaseHTTPRequestHandler):
 
             client = genai.Client(api_key=api_key)
 
-            # Decode gambar dari base64
+            # Decode dan Resize gambar agar cepat diproses (mencegah timeout 10 detik)
             image_bytes = base64.b64decode(image_base64)
             img = Image.open(io.BytesIO(image_bytes))
+            img.thumbnail((1024, 1024)) # Batasi resolusi maksimal agar ringan
 
             prompt = f"""
             Analisis gambar yang diunggah dan buatkan 3 opsi caption media sosial dalam Bahasa Indonesia dengan gaya bahasa '{tone}', lengkap dengan hashtag yang relevan.
