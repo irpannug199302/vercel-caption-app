@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Caption Generator Foto</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; background: #f4f7f6; }
+        .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        input, select { width: 100%; margin-top: 5px; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #0070f3; color: white; border: none; padding: 12px 20px; width: 100%; margin-top: 20px; cursor: pointer; border-radius: 4px; font-size: 16px; font-weight: bold; }
+        button:hover { background: #0051a2; }
+        #result { background: #f8f9fa; padding: 15px; margin-top: 20px; white-space: pre-wrap; border: 1px solid #e9ecef; border-radius: 4px; min-height: 100px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>AI Caption Generator Foto</h2>
+        <p>Unggah foto Anda dan biarkan Gemini membuatkan caption otomatis!</p>
+
+        <label for="imageInput">Pilih Foto:</label>
+        <input type="file" id="imageInput" accept="image/*">
+
+        <label for="tone">Gaya Bahasa (Tone):</label>
+        <select id="tone">
+            <option value="santai">Santai / Casual</option>
+            <option value="aesthetic">Aesthetic</option>
+            <option value="lucu">Lucu / Humor</option>
+            <option value="profesional">Profesional</option>
+        </select>
+
+        <button onclick="kirimKeServer()">Buat Caption</button>
+
+        <h3>Hasil Caption:</h3>
+        <div id="result">Hasilnya akan muncul di sini...</div>
+    </div>
+
+    <script>
+        async function kirimKeServer() {
+            const fileInput = document.getElementById('imageInput').files[0];
+            const tone = document.getElementById('tone').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!fileInput) {
+                alert("Mohon pilih foto terlebih dahulu!");
+                return;
+            }
+
+            resultDiv.innerText = "⏳ Sedang memproses foto di server Vercel...";
+
+            try {
+                const base64Data = await toBase64(fileInput);
+
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: base64Data, tone: tone, mimeType: fileInput.type })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    resultDiv.innerText = data.caption;
+                } else {
+                    resultDiv.innerText = "❌ Error: " + data.error;
+                }
+            } catch (error) {
+                resultDiv.innerText = "❌ Terjadi kesalahan jaringan: " + error.message;
+            }
+        }
+
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+    </script>
+</body>
+</html>
